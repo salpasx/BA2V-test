@@ -1,23 +1,16 @@
-# ベースイメージ
-FROM python:3.13-slim
+FROM python:3.11-slim
 
-# ffmpeg をインストール
-RUN apt-get update && \
-    apt-get install -y ffmpeg && \
-    rm -rf /var/lib/apt/lists/*
-
-# 作業ディレクトリ
 WORKDIR /app
 
-# ファイルをコピー
 COPY requirements.txt .
-COPY bot.py .
-
-# 依存ライブラリインストール
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 環境変数からトークンを取得する
-ENV DISCORD_TOKEN=""
 
-# コンテナ起動時に bot.py を実行
+# ffmpeg インストール
+RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+
+# bot.py をコピー
+COPY bot.py .
+
+# 起動コマンド
 CMD ["python", "bot.py"]
