@@ -111,20 +111,26 @@ async def on_message(message):
             await message.reply("Done")
             await message.reply(file=discord.File("output.mp4"))
 
-# bot.py の最後に簡単な HTTP サーバーを追加
 from flask import Flask
 from threading import Thread
+import discord
 
 app = Flask('')
 
 @app.route('/')
 def home():
-    return "Bot is running!"
+    return "I'm alive"
 
 def run():
     app.run(host='0.0.0.0', port=8000)
 
-t = Thread(target=run)
-t.start()
+def keep_alive():
+    t = Thread(target=run)
+    t.daemon = True
+    t.start()
+
+# --- Discord Bot -----
+
+keep_alive()
 
 client.run(TOKEN)
