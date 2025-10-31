@@ -38,7 +38,7 @@ async def on_message(message):
     if message.attachments:
         file = message.attachments[0]
         if file.filename.endswith(".zip"):
-            await message.reply("Convert now...")
+            await message.reply("Converting now...")
 
             # 保存
             await file.save("bootanimation.zip")
