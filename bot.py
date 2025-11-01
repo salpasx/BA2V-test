@@ -15,20 +15,22 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
-# 画像パターン自動検出
+# 画像パターン自動検出（末尾の数字を自動認識）
 def find_image_pattern(folder_path):
     files = sorted([f for f in os.listdir(folder_path) if f.lower().endswith((".png", ".jpg"))])
     if not files:
         return None
-    # 最初の数字を検出して桁数を取得
-    match = re.search(r"(\d+)", files[0])
-    if match:
-        width = len(match.group(1))
-        ext = os.path.splitext(files[0])[1]
-        return os.path.join(folder_path, f"%0{width}d{ext}")
-    else:
-        # 数字なしなら単一ファイル
+    # ファイル名末尾の数字を抽出（拡張子直前）
+    numbers = []
+    for f in files:
+        match = re.findall(r"(\d+)(?=\.\w+$)", f)
+        if match:
+            numbers.append(int(match[-1]))
+    if not numbers:
         return os.path.join(folder_path, files[0])
+    width = max(len(str(n)) for n in numbers)
+    ext = os.path.splitext(files[0])[1]
+    return os.path.join(folder_path, f"%0{width}d{ext}")
 
 @client.event
 async def on_ready():
@@ -47,6 +49,10 @@ async def on_message(message):
             # 以前の作業フォルダを削除
             if os.path.exists("boot"):
                 shutil.rmtree("boot")
+            if os.path.exists("output.mp4"):
+                os.remove("output.mp4")
+            if os.path.exists("list.txt"):
+                os.remove("list.txt")
 
             await file.save("bootanimation.zip")
 
@@ -64,8 +70,11 @@ async def on_message(message):
                 lines = f.readlines()
 
             # 幅・高さ・fps を取得
-            width, height, fps = lines[0].split()
-            fps = int(fps)
+            try:
+                width, height, fps = map(int, lines[0].split())
+            except:
+                await message.reply("desc.txt の 1 行目が不正です")
+                return
 
             inputs = []
             part_index = 0
@@ -124,8 +133,10 @@ app = Flask('')
 @app.route('/')
 def home():
     return "I'm alive"
+
 def run():
     app.run(host='0.0.0.0', port=8000)
+
 def keep_alive():
     t = Thread(target=run)
     t.daemon = True
