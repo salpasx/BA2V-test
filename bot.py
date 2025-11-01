@@ -121,7 +121,7 @@ async def on_message(message):
                                    if os.path.isdir(os.path.join("boot", d))])
 
             if not part_folders:
-                await message.reply(Not fount photo")
+                await message.reply("Not fount photo")
                 return
 
             mp4_list = []
