@@ -1,16 +1,15 @@
 FROM python:3.11-slim
 
+# 必須: ffmpeg インストール
+RUN apt-get update && \
+    apt-get install -y ffmpeg && \
+    apt-get clean
+
 WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY . .
 
-# ffmpeg インストール
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
-
-# bot.py をコピー
-COPY bot.py .
-
-# 起動コマンド
 CMD ["python", "bot.py"]
