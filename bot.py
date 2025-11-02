@@ -4,7 +4,7 @@ from convert import convert_part
 import subprocess
 
 # ここにあなたの Discord Bot トークンを入れる
-DISCORD_TOKEN = "DISCORDTOKEN"
+DISCORD_TOKEN = "YOUR_DISCORD_TOKEN"
 
 intents = discord.Intents.default()
 intents.message_content = True
